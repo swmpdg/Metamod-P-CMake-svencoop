@@ -111,7 +111,7 @@
 	{"snow",              "snow" MODARCH ".so",         "snow.dll",          "Snow-War"},
 	{"stargatetc",        "hl" MODARCH ".so",           "hl.dll",            "StargateTC"},
 	//Since 5.0 Sven Co-op uses "server.so" for Linux, no arch. - Solokiller
-	{"svencoop",          "server.so",					"hl.dll",            "Sven Coop"},
+	{"svencoop",          "server.so",					"server.dll",        "Sven Coop"},
 	{"swarm",             "swarm" MODARCH ".so",        "swarm.dll",         "Swarm"},
 	{"tfc",               "tfc" MODARCH ".so",          "tfc.dll",           "Team Fortress Classic"},
 	{"thewastes",         "thewastes" MODARCH ".so",    "thewastes.dll",     "The Wastes"},
