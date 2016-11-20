@@ -891,6 +891,13 @@ int EngCheckParm_Post(const char *pchCmdLineToken, char **pchNextVal) {
 	RETURN_META_VALUE(MRES_IGNORED, 0);
 }
 
+//Sven Co-op specific - Solokiller
+int NumberOfPrecachedModels_Post()
+{
+	ENGINE_TRACE( pfnNumberOfPrecachedModels, P_POST, ( "" ) );
+	RETURN_META_VALUE( MRES_IGNORED, 0 );
+}
+
 enginefuncs_t meta_engfuncs_post = {
 	PrecacheModel_Post,			// pfnPrecacheModel()
 	PrecacheSound_Post,			// pfnPrecacheSound()
@@ -1100,6 +1107,8 @@ enginefuncs_t meta_engfuncs_post = {
 	QueryClientCvarValue2_Post,			// pfnQueryClientCvarValue2()
 	// Added 2009-06-17 (no SDK update):
 	EngCheckParm_Post,					// pfnEngCheckParm()
+	//Sven Co-op specific - Solokiller
+	NumberOfPrecachedModels_Post,		// pfnNumberOfPrecachedModels()
 };
 
 C_DLLEXPORT int GetEngineFunctions_Post(enginefuncs_t *pengfuncsFromEngine, int *interfaceVersion ) 

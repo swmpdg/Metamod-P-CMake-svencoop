@@ -346,7 +346,9 @@ struct meta_enginefuncs_t : public enginefuncs_t {
 		void             (*_pfnResetTutorMessageDecayData)      (void),
 		void             (*_pfnQueryClientCvarValue)            (const edict_t*, const char*),
 		void             (*_pfnQueryClientCvarValue2)           (const edict_t*, const char*, int),
-		int              (*_pfnEngCheckParm)                    (const char *, char**)
+		int              (*_pfnEngCheckParm)                    (const char *, char**),
+		//Sven Co-op specific - Solokiller
+		int				( *_pfnNumberOfPrecachedModels )		( void )
         ) DLLINTERNAL;
 
         meta_enginefuncs_t( const meta_enginefuncs_t& ) DLLINTERNAL;

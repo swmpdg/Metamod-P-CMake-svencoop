@@ -915,6 +915,13 @@ static int mm_EngCheckParm(const char *pchCmdLineToken, char **pchNextVal) {
 	RETURN_API(int)
 }
 
+//Sven Co-op specific. - Solokiller
+static int mm_NumberOfPrecachedModels()
+{
+	META_ENGINE_HANDLE( int, 0, FN_NUMBEROFPRECACHEDMODELS, pfnNumberOfPrecachedModels, void, ( VOID_ARG ) );
+	RETURN_API( int )
+}
+
 meta_enginefuncs_t meta_engfuncs (
 	&mm_PrecacheModel,			// pfnPrecacheModel()
 	&mm_PrecacheSound,			// pfnPrecacheSound()
@@ -1126,5 +1133,8 @@ meta_enginefuncs_t meta_engfuncs (
 	&mm_QueryClientCvarValue2,		// pfnQueryClientCvarValue2()
 
 	// Added 2009/06/17 (no SDK update):
-	&mm_EngCheckParm			// pfnEngCheckParm()
+	&mm_EngCheckParm,			// pfnEngCheckParm()
+
+	//Sven Co-op specific - Solokiller
+	&mm_NumberOfPrecachedModels // pfnNumberofPrecachedModels()
 );

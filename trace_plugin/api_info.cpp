@@ -89,6 +89,7 @@ const dllapi_info_t dllapi_info = {
 	{ mFALSE,  9,	api_caller_void_args_void,	"CreateInstancedBaselines" },	// pfnCreateInstancedBaselines
 	{ mFALSE,  3,	api_caller_int_args_3p,		"InconsistentFile" },	// pfnInconsistentFile
 	{ mFALSE,  20,	api_caller_int_args_void,	"AllowLagCompensation" },	// pfnAllowLagCompensation
+	{ mFALSE,  18,	api_caller_void_args_void,	"EndFrame" },			// pfnEndFrame		Sven Co-op specific - Solokiller
 	{ mFALSE,  0,	NULL, 	NULL },
 };
 
@@ -268,6 +269,8 @@ const engine_info_t engine_info = {
 	{ mFALSE,  3,	api_caller_void_args_2pi,	"QueryClientCvarValue2" },	// pfnQueryClientCvarValue2
 	// Added 2009-06-17 (no SDK update):
 	{ mFALSE,  8,	api_caller_int_args_2p,		"EngCheckParm" },		// pfnEngCheckParm
+	//Sven co-op specific - Solokiller
+	{ mFALSE,  8,	api_caller_int_args_void,	"NumberOfPrecachedModels" },	// pfnNumberOfPrecachedModels
 	// end
 	{ mFALSE,  0,   NULL,	NULL },
 };

@@ -272,6 +272,11 @@ int AllowLagCompensation( void ) {
 	RETURN_META_VALUE(MRES_IGNORED, 1);
 }
 
+//Sven Co-op specific - Solokiller
+void EndFrame( void ) {
+	DLL_TRACE( pfnEndFrame, P_PRE, ( "" ) );
+	RETURN_META( MRES_IGNORED );
+}
 
 // from SDK ?
 void OnFreeEntPrivateData(edict_t *UNREFERENCED( pEnt )) {
@@ -365,6 +370,7 @@ static DLL_FUNCTIONS gFunctionTable =
 	CreateInstancedBaselines,	//! pfnCreateInstancedBaselines()	(wd) SDK2
 	InconsistentFile,			//! pfnInconsistentFile()		(wd) SDK2
 	AllowLagCompensation,		//! pfnAllowLagCompensation()	(wd) SDK2
+	EndFrame,					//! pfnEndFrame()				Sven Co-op specific - Solokiller
 };
 
 // It's not clear what the difference is between GetAPI and GetAPI2; they

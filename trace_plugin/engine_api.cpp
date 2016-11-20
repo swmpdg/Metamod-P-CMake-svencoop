@@ -889,6 +889,13 @@ int EngCheckParm(const char *pchCmdLineToken, char **UNREFERENCED( pchNextVal ))
 	RETURN_META_VALUE(MRES_IGNORED, 0);
 }
 
+//Sven Co-op specific - Solokiller
+int NumberOfPrecachedModels()
+{
+	ENGINE_TRACE( pfnNumberOfPrecachedModels, P_PRE, ( "" ) );
+	RETURN_META_VALUE( MRES_IGNORED, 0 );
+}
+
 enginefuncs_t meta_engfuncs = {
 	PrecacheModel,			// pfnPrecacheModel()
 	PrecacheSound,			// pfnPrecacheSound()
@@ -1095,6 +1102,7 @@ enginefuncs_t meta_engfuncs = {
 	QueryClientCvarValue,			// pfnQueryClientCvarValue()
 	QueryClientCvarValue2,			// pfnQueryClientCvarValue2()
 	EngCheckParm,					// pfnEngCheckParm()
+	NumberOfPrecachedModels,		// pfnNumberOfPrecachedModels()		Sven Co-op specific - Solokiller
 };
 
 C_DLLEXPORT int GetEngineFunctions(enginefuncs_t *pengfuncsFromEngine, 

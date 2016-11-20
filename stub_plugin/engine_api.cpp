@@ -246,6 +246,8 @@ enginefuncs_t meta_engfuncs =
 	NULL,						// pfnQueryClientCvarValue2()
 	// Added 2009-06-17 (no SDK update)
 	NULL,						// pfnEngCheckParm()
+	//Sven Co-op specific - Solokiller
+	NULL,						//pfnNumberOfPrecachedModels()
 };
 
 C_DLLEXPORT int GetEngineFunctions(enginefuncs_t *pengfuncsFromEngine, 

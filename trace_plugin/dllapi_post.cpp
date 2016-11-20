@@ -270,6 +270,11 @@ int AllowLagCompensation_Post( void ) {
 	RETURN_META_VALUE(MRES_IGNORED, 1);
 }
 
+//Sven Co-op specific - Solokiller
+void EndFrame_Post( void ) {
+	DLL_TRACE( pfnEndFrame, P_POST, ( "" ) );
+	RETURN_META( MRES_IGNORED );
+}
 
 // from SDK ?
 void OnFreeEntPrivateData_Post(edict_t *UNREFERENCED( pEnt )) {
@@ -363,6 +368,7 @@ static DLL_FUNCTIONS gFunctionTable_Post =
 	CreateInstancedBaselines_Post,	//! pfnCreateInstancedBaselines()	(wd) SDK2
 	InconsistentFile_Post,			//! pfnInconsistentFile()		(wd) SDK2
 	AllowLagCompensation_Post,		//! pfnAllowLagCompensation()	(wd) SDK2
+	EndFrame_Post,					//! pfnEndFrame()				Sven Co-op specific - Solokiller
 };
 
 C_DLLEXPORT int GetEntityAPI_Post( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion )

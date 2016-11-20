@@ -117,6 +117,8 @@ typedef struct dllapi_info_s {
 	api_info_t pfnCreateInstancedBaselines;
 	api_info_t pfnInconsistentFile;
 	api_info_t pfnAllowLagCompensation;
+	//Sven Co-op specific - Solokiller
+	api_info_t pfnEndFrame;
 	api_info_t END;
 } dllapi_info_t;
 
@@ -300,6 +302,8 @@ typedef struct engine_info_s {
 	api_info_t pfnQueryClientCvarValue2;
 	// Added 2009/06/17 (no SDK update):
 	api_info_t pfnEngCheckParm;
+	//Sven Co-op specific - Solokiller
+	api_info_t pfnNumberOfPrecachedModels;
 	// end
 	api_info_t END;
 } engine_info_t;

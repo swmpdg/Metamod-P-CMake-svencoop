@@ -99,6 +99,7 @@ static DLL_FUNCTIONS gFunctionTable =
 	NULL,					// pfnCreateInstancedBaselines
 	NULL,					// pfnInconsistentFile
 	NULL,					// pfnAllowLagCompensation
+	NULL,					// pfnEndFrame		Sven Co-op specific - Solokiller
 };
 
 C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, 
