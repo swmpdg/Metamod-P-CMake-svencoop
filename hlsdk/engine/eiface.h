@@ -314,6 +314,9 @@ typedef struct enginefuncs_s
 	// Added 2009/06/19 (no SDK update):
 	int 		(*pfnEngCheckParm)			(const char *pchCmdLineToken, char **pchNextVal);
 
+	// AdamR: New functions to get the number of models precached (18/Feb/2015)
+	int	( *pfnNumberOfPrecachedModels )	( void );
+
 #ifdef __METAMOD_BUILD__
 	//extra (future updates)
 	void * extra_functions[16];
@@ -541,6 +544,8 @@ typedef struct
 	// Most games right now should return 0, until client-side weapon prediction code is written
 	//  and tested for them.
 	int				(*pfnAllowLagCompensation)( void );
+
+	void			(*pfnEndFrame)( void );	//Called at the end of physics processing for a given frame.
 } DLL_FUNCTIONS;
 
 extern DLL_FUNCTIONS		gEntityInterface;
