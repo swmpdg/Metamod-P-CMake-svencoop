@@ -189,22 +189,17 @@ set( META_BASE_DIRECTORY ${GAME_DIRECTORY}/addons )
 set( SDK_DIRECTORY "${CMAKE_SOURCE_DIR}/hlsdk" CACHE PATH "Path to the Half-Life SDK directory" )
 
 #Set global compiler settings.
-if( WIN32 )
+if( MSVC )
 	#Warning level 4. Wall shows warnings in standard headers so we can't compile if that's enabled.
 	#Treat warnings as errors.
-	set( GLOBAL_COMPILER_FLAGS "/W4 /WX" )
+	#When using the v140_xp toolset or newer, static local variables are initialized using thread safe initialization. This won't work on XP so we have to disable this behavior.
+	#See https://connect.microsoft.com/VisualStudio/Feedback/Details/1941836 for more information.
+	set( GLOBAL_COMPILER_FLAGS "/W4 /WX /Zc:threadSafeInit-" )
 	
 	#Optimize for speed.
 	#Omit frame pointers.
 	#Precise floating point operations.
 	set( GLOBAL_COMPILER_FLAGS_RELEASE "/O2 /Oy /fp:precise" )
-	
-	if( CYGWIN )
-		set( GLOBAL_COMPILER_FLAGS 
-			${GLOBAL_COMPILER_FLAGS}
-			-mno-cygwin
-		)
-	endif()
 else()
 	#All warnings.
 	#No unknown pragma directives.
@@ -215,6 +210,14 @@ else()
 	#Omit frame pointers.
 	#Precise floating point operations.
 	set( GLOBAL_COMPILER_FLAGS_RELEASE "-O2 -fomit-frame-pointer -ffast-math" )
+	
+	#Cygwin uses GCC style settings.
+	if( CYGWIN )
+		set( GLOBAL_COMPILER_FLAGS 
+			${GLOBAL_COMPILER_FLAGS}
+			-mno-cygwin
+		)
+	endif()
 endif()
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GLOBAL_COMPILER_FLAGS}" )
@@ -235,11 +238,18 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${GLOBAL_
 #C++14 support
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y" )
 
+#Shared source files.
+set( SHARED_SOURCES
+	${SDK_DIRECTORY}/public/interface.h
+	${SDK_DIRECTORY}/public/interface.cpp
+)
+
 #Shared include paths.
 set( SHARED_INCLUDE_PATHS
 	${CMAKE_SOURCE_DIR}/metamod
 	${SDK_DIRECTORY}/engine
 	${SDK_DIRECTORY}/common
+	${SDK_DIRECTORY}/public
 	${SDK_DIRECTORY}/pm_shared
 	${SDK_DIRECTORY}/dlls
 	${SDK_DIRECTORY}
@@ -259,9 +269,18 @@ elseif( NOT OPT STREQUAL "" )
 	set( OPT_TYPE "OPT_TYPE=\"debug\"" )
 endif()
 
+set( HLSDK_3_2_OLD_EIFACE "0" CACHE BOOL "Whether to use the old SDK interface for the Trace plugin" )
+
+if( HLSDK_3_2_OLD_EIFACE )
+	set( HLSDK_3_2_OLD_EIFACE_FLAG "HLSDK_3_2_OLD_EIFACE" )
+else()
+	set( HLSDK_3_2_OLD_EIFACE_FLAG )
+endif()
+
 #Shared preprocessor definitions.
 set( SHARED_DEFINITIONS
 	${OPT_TYPE}
+	${HLSDK_3_2_OLD_EIFACE_FLAG}
 )
 
 if( OPT STREQUAL "opt-fast" )

@@ -328,6 +328,10 @@ static void mm_OnFreeEntPrivateData(edict_t *pEnt) {
 }
 static void mm_GameShutdown(void) {
 	META_NEWAPI_HANDLE_void(FN_GAMESHUTDOWN, pfnGameShutdown, void, (VOID_ARG));
+
+	//Unload all plugins so they can perform cleanup.
+	Plugins->unload_all();
+
 	RETURN_API_void();
 }
 static int mm_ShouldCollide(edict_t *pentTouched, edict_t *pentOther) {

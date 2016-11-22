@@ -15,16 +15,9 @@ set( PLUGIN_NAME trace_plugin )
 #Set plugin specific linker flags here.
 set( PLUGIN_LINK_FLAGS )
 
-set( TRACE_HLSDK_3_2_OLD_EIFACE "0" CACHE BOOL "Whether to use the old SDK interface for the Trace plugin" )
-
-if( TRACE_HLSDK_3_2_OLD_EIFACE )
-	set( HLSDK_3_2_OLD_EIFACE "HLSDK_3_2_OLD_EIFACE" )
-else()
-	set( HLSDK_3_2_OLD_EIFACE )
-endif()
-
 #Add plugin sources here, or using add_subdirectory.
 add_sources(
+	${SHARED_SOURCES}
 	api_info.cpp
 	dllapi.cpp
 	dllapi_post.h
@@ -68,7 +61,6 @@ target_include_directories( ${PLUGIN_NAME} PRIVATE
 #Define preprocessor symbols here.
 target_compile_definitions( ${PLUGIN_NAME} PRIVATE
 	${SHARED_DEFINITIONS}
-	${HLSDK_3_2_OLD_EIFACE}
 )
 
 #Add library dependencies here.

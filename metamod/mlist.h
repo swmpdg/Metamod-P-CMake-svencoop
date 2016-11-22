@@ -89,6 +89,7 @@ class MPluginList : public class_metamod_new {
 		void DLLINTERNAL show(int source_index);		// list plugins to console
 		void DLLINTERNAL show(void) { show(-1); };		// list plugins to console
 		void DLLINTERNAL show_client(edict_t *pEntity);		// list plugins to player client
+		void DLLINTERNAL unload_all();
 };
 
 #endif /* MLIST_H */
