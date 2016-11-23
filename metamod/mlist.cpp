@@ -899,18 +899,3 @@ void DLLINTERNAL MPluginList::show_client(edict_t *pEntity) {
 	}
 	META_CLIENT(pEntity, "%d plugins", n);
 }
-
-void DLLINTERNAL MPluginList::unload_all()
-{
-	MPlugin* pl;
-
-	for( int i = 0; i < endlist; ++i )
-	{
-		pl = &plist[ i ];
-
-		pl->action = PA_UNLOAD;
-		pl->unload( PT_STARTUP, PNL_CMD_FORCED, PNL_SHUTDOWN );
-	}
-
-	endlist = 0;
-}
