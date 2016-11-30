@@ -485,6 +485,32 @@ mBOOL DLLINTERNAL meta_load_gamedll(void) {
 		RETURN_ERRNO(mFALSE, ME_DLMISSING);
 	}
 
+	//Get the createInterface function if it was exported. - Solokiller
+	GameDLL.createInterface = ( CreateInterfaceFn ) DLSYM( GameDLL.handle, CREATEINTERFACE_PROCNAME );
+
+	if( GameDLL.createInterface )
+	{
+		META_DEBUG( 3, ( "dll: Game '%s': Found %s", GameDLL.name, CREATEINTERFACE_PROCNAME ) );
+	}
+	else
+	{
+		META_DEBUG( 5, ( "dll: Game '%s': No %s", GameDLL.name, CREATEINTERFACE_PROCNAME ) );
+	}
+
 	META_LOG("Game DLL for '%s' loaded successfully", GameDLL.desc);
 	return(mTRUE);
+}
+
+IBaseInterface* MetaCreateInterface_Handler( const char* pName, int* pReturnCode )
+{
+	//Our interface list didn't export an interface, see if the game does.
+	if( !GameDLL.createInterface )
+	{
+		if( pReturnCode )
+			*pReturnCode = IFACE_FAILED;
+
+		return NULL;
+	}
+
+	return GameDLL.createInterface( pName, pReturnCode );
 }

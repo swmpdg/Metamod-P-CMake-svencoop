@@ -47,6 +47,7 @@
 #include "mplayer.h"                    // MPlayerList
 #include "meta_eiface.h"        // HL_enginefuncs_t, meta_enginefuncs_t
 #include "engine_t.h"           // engine_t, Engine
+#include "interface.h"			//CreateInterface, MetaCreateInterface_Handler, etc
 
 // file that lists plugins to load at startup
 #define PLUGINS_INI			"addons/metamod/plugins.ini"
@@ -78,6 +79,7 @@ typedef struct gamedll_s {
 	char real_pathname[PATH_MAX];	// in case pathname overridden by bot, etc
 	DLHANDLE handle;
 	gamedll_funcs_t funcs;		// dllapi_table, newapi_table
+	CreateInterfaceFn createInterface;	//The game's CreateInterface function, if exported. - Solokiller
 } gamedll_t;
 extern gamedll_t GameDLL DLLHIDDEN;
 

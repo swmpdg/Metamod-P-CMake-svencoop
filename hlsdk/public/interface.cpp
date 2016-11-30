@@ -52,54 +52,61 @@ InterfaceReg::InterfaceReg( InstantiateInterfaceFn fn, const char *pName ) :
 
 // ------------------------------------------------------------------------------------ //
 // CreateInterface.
+//	Documentation copied from Source - Solokiller
+// This is the primary exported function by a dll, referenced by name via dynamic binding
+// that exposes an opqaue function pointer to the interface.
+//
+// We have the Internal variant so Sys_GetFactoryThis() returns the correct internal 
+// symbol under GCC/Linux/Mac as CreateInterface is DLL_EXPORT so its global so the loaders
+// on those OS's pick exactly 1 of the CreateInterface symbols to be the one that is process wide and 
+// all Sys_GetFactoryThis() calls find that one, which doesn't work. Using the internal walkthrough here
+// makes sure Sys_GetFactoryThis() has the dll specific symbol and GetProcAddress() returns the module specific
+// function for CreateInterface again getting the dll specific symbol we need.
 // ------------------------------------------------------------------------------------ //
-EXPORT_FUNCTION IBaseInterface *CreateInterface( const char *pName, int *pReturnCode )
+static IBaseInterface *CreateInterfaceInternal( const char *pName, int *pReturnCode )
 {
 	InterfaceReg *pCur;
-	
-	for(pCur=InterfaceReg::s_pInterfaceRegs; pCur; pCur=pCur->m_pNext)
+
+	for( pCur = InterfaceReg::s_pInterfaceRegs; pCur; pCur = pCur->m_pNext )
 	{
-		if(strcmp(pCur->m_pName, pName) == 0)
+		if( strcmp( pCur->m_pName, pName ) == 0 )
 		{
-			if ( pReturnCode )
+			if( pReturnCode )
 			{
 				*pReturnCode = IFACE_OK;
 			}
 			return pCur->m_CreateFn();
 		}
 	}
-	
-	if ( pReturnCode )
+
+	if( pReturnCode )
 	{
 		*pReturnCode = IFACE_FAILED;
 	}
-	return NULL;	
+	return NULL;
 }
 
-#ifdef LINUX
 static IBaseInterface *CreateInterfaceLocal( const char *pName, int *pReturnCode )
 {
-	InterfaceReg *pCur;
-	
-	for(pCur=InterfaceReg::s_pInterfaceRegs; pCur; pCur=pCur->m_pNext)
-	{
-		if(strcmp(pCur->m_pName, pName) == 0)
-		{
-			if ( pReturnCode )
-			{
-				*pReturnCode = IFACE_OK;
-			}
-			return pCur->m_CreateFn();
-		}
-	}
-	
-	if ( pReturnCode )
-	{
-		*pReturnCode = IFACE_FAILED;
-	}
-	return NULL;	
-}
+	IBaseInterface* pInterface = CreateInterfaceInternal( pName, pReturnCode );
+
+	//Interface might be null, but still have a valid interface function in the list. - Solokiller
+	if( pInterface || pReturnCode && *pReturnCode == IFACE_OK )
+		return pInterface;
+
+#ifdef __METAMOD_BUILD__
+	//Metamod needs to be able to intercept any interfaces that the game might export (currently none for Steam Half-Life).
+	//Pass it through to the game if it exports a CreateInterface. - Solokiller
+	pInterface = MetaCreateInterface_Handler( pName, pReturnCode );
 #endif
+
+	return pInterface;
+}
+
+EXPORT_FUNCTION IBaseInterface *CreateInterface( const char *pName, int *pReturnCode )
+{
+	return CreateInterfaceLocal( pName, pReturnCode );
+}
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -230,7 +237,10 @@ CreateInterfaceFn Sys_GetFactory( CSysModule *pModule )
 #endif
 }
 
-
+CreateInterfaceFn Sys_GetFactoryInternal( void )
+{
+	return &CreateInterfaceInternal;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: returns the instance of this module
@@ -238,11 +248,7 @@ CreateInterfaceFn Sys_GetFactory( CSysModule *pModule )
 //-----------------------------------------------------------------------------
 CreateInterfaceFn Sys_GetFactoryThis( void )
 {
-#ifdef LINUX
-	return CreateInterfaceLocal;
-#else
-	return CreateInterface;
-#endif
+	return &CreateInterfaceLocal;
 }
 
 //-----------------------------------------------------------------------------
