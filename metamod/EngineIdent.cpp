@@ -174,6 +174,13 @@ const char* CEngineIdent::GetArchDescription() const
 #ifdef WIN32
 	return "Windows";
 #else
-	return *m_szArch ? m_szArch : "Unknown";
+	if( *m_szArch )
+		return m_szArch;
+
+	//On Linux, hw is the client engine library.
+	if( strcmp( m_szName, "hw" ) == 0 )
+		return "Linux";
+
+	return "Unknown";
 #endif
 }
