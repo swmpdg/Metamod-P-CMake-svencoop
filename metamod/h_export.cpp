@@ -89,11 +89,14 @@ C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine,
 	Engine.funcs = &g_engfuncs;
 	Engine.globals = pGlobals;
 	Engine.info.initialise(pengfuncsFromEngine);
+	Engine.ident.Identify( pengfuncsFromEngine );
 
 	g_engfuncs.initialise_interface(pengfuncsFromEngine);
 	// NOTE!  Have to call logging function _after_ initialising g_engfuncs, so
 	// that g_engfuncs.pfnAlertMessage() can be resolved properly, heh. :)
 	META_DEV("called: GiveFnptrsToDll");
+
+	META_DEV( "Engine library name: %s; Arch: %s\n", Engine.ident.GetName(), Engine.ident.GetArchDescription() );
 	
 	// Load plugins, load game dll.
 	if(!metamod_startup()) {
