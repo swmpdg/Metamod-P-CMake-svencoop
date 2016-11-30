@@ -167,7 +167,7 @@ struct MetaFactories_t
 		free( Factories );
 	}
 
-	void Init(
+	bool Init(
 		CreateInterfaceFn pMetamodFactory,
 		CreateInterfaceFn pMetamodOnlyFactory,
 		CreateInterfaceFn pGameFactory,
@@ -181,12 +181,32 @@ struct MetaFactories_t
 		if( Factories )
 			free( Factories );
 
-		Factories = ( CreateInterfaceFn* ) malloc( sizeof( CreateInterfaceFn ) * uiNumFactories );
+		if( uiNumFactories > 0 )
+		{
+			Factories = ( CreateInterfaceFn* ) malloc( sizeof( CreateInterfaceFn ) * uiNumFactories );
 
-		memcpy( Factories, pFactories, uiNumFactories );
+			if( Factories == NULL )
+				return false;
 
-		Factories		= pFactories;
-		NumFactories	= uiNumFactories;
+			memcpy( Factories, pFactories, sizeof( CreateInterfaceFn ) * uiNumFactories );
+		}
+		else
+			Factories = NULL;
+
+		NumFactories = uiNumFactories;
+
+		return true;
+	}
+
+	bool Init( const MetaFactories_t& factories )
+	{
+		return Init(
+			factories.MetamodFactory,
+			factories.MetamodOnlyFactory,
+			factories.GameFactory,
+			factories.Factories,
+			factories.NumFactories
+		);
 	}
 
 	/**

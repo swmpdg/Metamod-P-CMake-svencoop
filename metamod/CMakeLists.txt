@@ -51,6 +51,8 @@ add_sources(
 	dllapi.cpp
 	dllapi.h
 	enginecallbacks.h
+	EngineIdent.h
+	EngineIdent.cpp
 	engineinfo.cpp
 	engineinfo.h
 	engine_api.cpp

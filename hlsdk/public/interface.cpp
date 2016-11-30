@@ -91,7 +91,7 @@ static IBaseInterface *CreateInterfaceLocal( const char *pName, int *pReturnCode
 	IBaseInterface* pInterface = CreateInterfaceInternal( pName, pReturnCode );
 
 	//Interface might be null, but still have a valid interface function in the list. - Solokiller
-	if( pInterface || pReturnCode && *pReturnCode == IFACE_OK )
+	if( pInterface || ( pReturnCode && *pReturnCode == IFACE_OK ) )
 		return pInterface;
 
 #ifdef __METAMOD_BUILD__

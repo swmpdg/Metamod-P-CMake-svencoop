@@ -39,6 +39,7 @@
 
 #include "eiface.h"             // engfuncs_t, globalvars_t
 #include "engineinfo.h"         // EngineInfo
+#include "EngineIdent.h"		// CEngineIdent
 #include "comp_dep.h"
 #include "osdep.h"	//unlikely, OPEN_ARGS
 
@@ -52,6 +53,7 @@ struct engine_t {
 	globalvars_t	*globals;		// engine globals
 	enginefuncs_t	*pl_funcs;		// "modified" eng funcs we give to plugins
 	EngineInfo       info;          // some special info elements
+	CEngineIdent	ident;			//Library handle, name, arch
 };
 
 inline engine_t::engine_t() 

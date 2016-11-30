@@ -83,6 +83,8 @@ typedef struct gamedll_s {
 } gamedll_t;
 extern gamedll_t GameDLL DLLHIDDEN;
 
+extern MetaFactories_t MetaFactories DLLHIDDEN;
+
 // SDK variables for storing engine funcs and globals.
 extern HL_enginefuncs_t g_engfuncs DLLHIDDEN;
 extern globalvars_t *gpGlobals DLLHIDDEN;
@@ -126,6 +128,7 @@ extern int requestid_counter DLLHIDDEN;
 int DLLINTERNAL metamod_startup(void);
 
 mBOOL DLLINTERNAL meta_init_gamedll(void);
+mBOOL DLLINTERNAL meta_factories_init(void);
 mBOOL DLLINTERNAL meta_load_gamedll(void);
 
 // ===== lotsa macros... ======================================================
