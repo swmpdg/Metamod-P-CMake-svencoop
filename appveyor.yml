@@ -18,11 +18,11 @@
     # Build with all those possible configurations
     environment:
       matrix:
-        - BUILD_RULES: -DOPT:STRING=debug
+        - BUILD_RULES: -DOPT:STRING=debug -DGAME_BASE_DIRECTORY=dummy
           opt: debug
-        - BUILD_RULES: -DOPT:STRING=opt
+        - BUILD_RULES: -DOPT:STRING=opt -DGAME_BASE_DIRECTORY=dummy
           opt: opt
-        - BUILD_RULES: -DOPT:STRING=opt-fast
+        - BUILD_RULES: -DOPT:STRING=opt-fast -DGAME_BASE_DIRECTORY=dummy
           opt: opt-fast
     
     before_build:
