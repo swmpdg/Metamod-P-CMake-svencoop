@@ -56,6 +56,7 @@
 #include "info_name.h"			// VNAME, etc
 #include "vdate.h"				// COMPILE_TIME, etc
 #include "linkent.h"
+#include "SteamworksAPI_Meta.h"
 
 cvar_t meta_version = {"metamod_version", VVERSION, FCVAR_SERVER, 0, NULL};
 
@@ -267,6 +268,12 @@ int DLLINTERNAL metamod_startup(void) {
 	if(!meta_load_gamedll()) {
 		META_ERROR("Failure to load game DLL; exiting...");
 		return(0);
+	}
+
+	if( !Steamworks_Init() )
+	{
+		META_ERROR( "Failure to initialize Steamworks; exiting..." );
+		return 0;
 	}
 
 	if( !meta_factories_init() )

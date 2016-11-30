@@ -43,6 +43,7 @@
 #include <meta_api.h>		// of course
 
 #include "sdk_util.h"		// UTIL_LogPrintf, etc
+#include "plugin/SteamworksAPI.h"
 
 // Must provide at least one of these..
 static META_FUNCTIONS gMetaFunctionTable = {
@@ -122,6 +123,8 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */,
 C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */, 
 		PL_UNLOAD_REASON /* reason */) 
 {
+	Steamworks_ShutdownLibrary();
+
 	return(TRUE);
 }
 
@@ -133,6 +136,16 @@ C_DLLEXPORT int Meta_Factories( MetaFactories_t* pFactories )
 	{
 		LOG_ERROR( PLID, "Meta_Factories called with null pFactories" );
 		return( FALSE );
+	}
+
+	if( !Steamworks_InitLibrary() )
+	{
+		LOG_ERROR( PLID, "Failed to initialize Steamworks interface" );
+		return FALSE;
+	}
+	else
+	{
+		LOG_MESSAGE( PLID, "Steamworks interface initialized" );
 	}
 
 	return TRUE;
