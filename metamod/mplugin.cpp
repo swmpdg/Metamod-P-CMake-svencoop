@@ -52,6 +52,7 @@
 #include "log_meta.h"			// logging functions, etc
 #include "osdep.h"				// win32 snprintf, is_absolute_path,
 #include "mm_pextensions.h"
+#include "engine_t.h"			//Engine.ident
 
 
 // Parse a line from plugins.ini into a plugin.
@@ -978,15 +979,13 @@ mBOOL DLLINTERNAL MPlugin::attach(PLUG_LOADTIME now) {
 	{
 		//Initialize factories list and hand it to the plugin. - Solokiller
 		//Note: If you need to pass factories from other plugins into this one,
-		//you can wrap it and pass it as one of the extra functions, or pass it directly. - Solokiller
-		//TODO: get the engine CreateInterface pointer and pass it in. - Solokiller
-		factories.Init(
-			Sys_GetFactoryThis(),
-			Sys_GetFactoryInternal(),
-			GameDLL.createInterface,
-			NULL,
-			0
-		);
+		//you can wrap it and pass it as one of the extra functions, or pass it directly.
+		//Each plugin gets its own copy to prevent plugins from modifying the factory list.
+		if( !factories.Init( MetaFactories ) )
+		{
+			META_WARNING( "dll: Failed attach plugin '%s': Failed malloc() for factories" );
+			RETURN_ERRNO( mFALSE, ME_NOMEM );
+		}
 
 		int factoryResult = pfnFactories( &factories );
 

@@ -74,6 +74,8 @@ option_t global_options[] = {
 
 gamedll_t GameDLL;
 
+MetaFactories_t MetaFactories;
+
 meta_globals_t PublicMetaGlobals;
 meta_globals_t PrivateMetaGlobals;
 
@@ -266,6 +268,13 @@ int DLLINTERNAL metamod_startup(void) {
 		META_ERROR("Failure to load game DLL; exiting...");
 		return(0);
 	}
+
+	if( !meta_factories_init() )
+	{
+		META_ERROR( "Failure to initialize factories; exiting..." );
+		return 0;
+	}
+
 	if(!Plugins->load()) {
 		META_WARNING("Failure to load plugins...");
 		// Exit on failure here?  Dunno...
@@ -499,6 +508,72 @@ mBOOL DLLINTERNAL meta_load_gamedll(void) {
 
 	META_LOG("Game DLL for '%s' loaded successfully", GameDLL.desc);
 	return(mTRUE);
+}
+
+// Verify that the engine is loaded and initialize factory list.
+// meta_errno values:
+//  - ME_DLOPEN		engine handle is null
+mBOOL DLLINTERNAL meta_factories_init(void)
+{
+	if( Engine.ident.GetHandle() == NULL )
+	{
+		META_WARNING( "dll: Couldn't find Engine handle" );
+		RETURN_ERRNO( mFALSE, ME_DLOPEN );
+	}
+
+	CreateInterfaceFn engineFactory = ( CreateInterfaceFn ) DLSYM( Engine.ident.GetHandle(), CREATEINTERFACE_PROCNAME );
+
+	if( engineFactory )
+	{
+		META_DEBUG( 3, ( "dll: Engine '%s:%s': Found %s", Engine.ident.GetName(), Engine.ident.GetArchDescription(), CREATEINTERFACE_PROCNAME ) );
+	}
+	else
+	{
+		META_DEBUG( 5, ( "dll: Engine '%s:%s': No %s", Engine.ident.GetName(), Engine.ident.GetArchDescription(), CREATEINTERFACE_PROCNAME ) );
+	}
+
+	//Initialize factories list. - Solokiller
+	CreateInterfaceFn factoryList[] =
+	{
+		engineFactory
+	};
+
+	//In case some factories are missing (old engine, etc), move all non-null factories to the beginning.
+	size_t uiMax = ARRAYSIZE( factoryList );
+
+	size_t uiIndex = 0;
+
+	for( uiIndex = 0; uiIndex < uiMax; )
+	{
+		if( !factoryList[ uiIndex ] )
+		{
+			//Empty factory, move all following factories down.
+			memmove( factoryList + uiIndex, factoryList + uiIndex + 1, sizeof( CreateInterfaceFn ) * ( uiMax - uiIndex ) );
+
+			--uiMax;
+		}
+		else
+		{
+			++uiIndex;
+		}
+	}
+
+	//Zero out null factories in case anybody tries to call them (memmove doesn't zero them out).
+	memset( factoryList + uiIndex, 0, sizeof( CreateInterfaceFn ) * ( ARRAYSIZE( factoryList ) - uiIndex ) );
+
+	if( !MetaFactories.Init(
+			Sys_GetFactoryThis(),
+			Sys_GetFactoryInternal(),
+			GameDLL.createInterface,
+			factoryList,
+			uiIndex
+		) )
+	{
+		META_WARNING( "dll: Failed factories init: Failed malloc() for MetaFactories" );
+		RETURN_ERRNO( mFALSE, ME_NOMEM );
+	}
+
+	return mTRUE;
 }
 
 IBaseInterface* MetaCreateInterface_Handler( const char* pName, int* pReturnCode )
