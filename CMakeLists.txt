@@ -174,12 +174,20 @@ endif()
 
 set( DEPLOY_TO_GAME "0" CACHE BOOL "Whether to deploy libraries to the given game directory" )
 
-set( GAME_DIRECTORY "" CACHE PATH "Path to the game directory to deploy libraries to if DEPLOY_TO_GAME is enabled" )
+set( GAME_BASE_DIRECTORY "" CACHE PATH "Path to the game directory. e.g. C:/steam/steamapps/common/Half-Life" )
+
+if( NOT GAME_BASE_DIRECTORY )
+	MESSAGE( FATAL_ERROR "GAME_BASE_DIRECTORY is required to find needed libraries" )
+endif()
+
+set( MOD_NAME "" CACHE STRING "Name of the game. This is the name of the directory in GAME_BASE_DIRECTORY. Needed to deploy libraries to the correct mod directory" )
+
+set( GAME_DIRECTORY ${GAME_BASE_DIRECTORY}/${MOD_NAME} )
 
 #Can't deploy without a game directory.
-if( NOT GAME_DIRECTORY AND DEPLOY_TO_GAME )
+if( NOT MOD_NAME AND DEPLOY_TO_GAME )
 	set( DEPLOY_TO_GAME "0" )
-	MESSAGE( WARNING "Can't deploy without a game directory!" )
+	MESSAGE( WARNING "Can't deploy without a mod directory!" )
 endif()
 
 #The base directory for all Metamod data.
@@ -239,20 +247,40 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${GLOBAL_
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y" )
 
 #Shared source files.
+add_subdirectory( ${CMAKE_SOURCE_DIR}/shared shared )
+
+preprocess_sources()
+
 set( SHARED_SOURCES
 	${SDK_DIRECTORY}/public/interface.h
 	${SDK_DIRECTORY}/public/interface.cpp
+	${PREP_SRCS}
 )
+
+clear_sources()
+
+#Shared sources for plugins.
+add_subdirectory( ${CMAKE_SOURCE_DIR}/shared/plugin shared/plugin )
+
+preprocess_sources()
+
+set( SHARED_PLUGIN_SOURCES
+	${PREP_SRCS}
+)
+
+clear_sources()
 
 #Shared include paths.
 set( SHARED_INCLUDE_PATHS
 	${CMAKE_SOURCE_DIR}/metamod
+	${CMAKE_SOURCE_DIR}/shared
 	${SDK_DIRECTORY}/engine
 	${SDK_DIRECTORY}/common
 	${SDK_DIRECTORY}/public
 	${SDK_DIRECTORY}/pm_shared
 	${SDK_DIRECTORY}/dlls
 	${SDK_DIRECTORY}
+	${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/public/steam
 )
 
 #The user can select an optimization setting.
@@ -278,9 +306,11 @@ else()
 endif()
 
 #Shared preprocessor definitions.
+#Use version safe interfaces.
 set( SHARED_DEFINITIONS
 	${OPT_TYPE}
 	${HLSDK_3_2_OLD_EIFACE_FLAG}
+	VERSION_SAFE_STEAM_API_INTERFACES
 )
 
 if( OPT STREQUAL "opt-fast" )
@@ -308,6 +338,10 @@ elseif( UNIX )
 	)
 	
 endif()
+
+set( SHARED_PLUGIN_DEFS
+	STEAM_API_NODLL
+)
 
 #Shared library dependencies.
 set( SHARED_LIBRARY_DEPS

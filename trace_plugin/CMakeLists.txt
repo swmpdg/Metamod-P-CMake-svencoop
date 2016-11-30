@@ -18,6 +18,7 @@ set( PLUGIN_LINK_FLAGS )
 #Add plugin sources here, or using add_subdirectory.
 add_sources(
 	${SHARED_SOURCES}
+	${SHARED_PLUGIN_SOURCES}
 	api_info.cpp
 	dllapi.cpp
 	dllapi_post.h
@@ -61,6 +62,7 @@ target_include_directories( ${PLUGIN_NAME} PRIVATE
 #Define preprocessor symbols here.
 target_compile_definitions( ${PLUGIN_NAME} PRIVATE
 	${SHARED_DEFINITIONS}
+	${SHARED_PLUGIN_DEFS}
 )
 
 #Add library dependencies here.
