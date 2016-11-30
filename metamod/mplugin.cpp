@@ -970,6 +970,39 @@ mBOOL DLLINTERNAL MPlugin::attach(PLUG_LOADTIME now) {
 	{
 		META_LOG("dll: Plugin '%s' isn't catching _any_ functions ??", desc);
 	}
+
+	//Pass in factory functions so plugins can easily hook into Metamod and game interfaces. - Solokiller
+	META_FACTORIES_FN pfnFactories = ( META_FACTORIES_FN ) DLSYM( handle, META_FACTORIES_PROCNAME );
+
+	if( pfnFactories )
+	{
+		//Initialize factories list and hand it to the plugin. - Solokiller
+		//Note: If you need to pass factories from other plugins into this one,
+		//you can wrap it and pass it as one of the extra functions, or pass it directly. - Solokiller
+		//TODO: get the engine CreateInterface pointer and pass it in. - Solokiller
+		factories.Init(
+			Sys_GetFactoryThis(),
+			Sys_GetFactoryInternal(),
+			GameDLL.createInterface,
+			NULL,
+			0
+		);
+
+		int factoryResult = pfnFactories( &factories );
+
+		if( factoryResult != TRUE )
+		{
+			META_WARNING( "dll: Failed attach plugin '%s': Error from Meta_Factories(): %d", desc, ret );
+			// caller will dlclose()
+			RETURN_ERRNO( mFALSE, ME_DLERROR );
+		}
+
+		META_DEBUG( 6, ( "dll: Plugin '%s': Called Meta_Factories() successfully", desc ) );
+	}
+	else
+	{
+		META_DEBUG( 5, ( "dll: Plugin '%s': No %s", desc, META_FACTORIES_PROCNAME ) );
+	}
 	
 	time_loaded=time(NULL);
 	return(mTRUE);

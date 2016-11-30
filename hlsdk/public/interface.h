@@ -119,7 +119,21 @@ extern "C"
 	EXPORT_FUNCTION IBaseInterface* CreateInterface(const char *pName, int *pReturnCode);
 };
 
+#ifdef __METAMOD_BUILD__
+/**
+*	Used by Metamod to pass CreateInterface calls through to the game if Metamod didn't handle it. - Solokiller
+*/
+IBaseInterface* MetaCreateInterface_Handler( const char* pName, int* pReturnCode );
+#endif
 
+/**
+*	Gets the factory that only checks the local interface list. - Solokiller
+*/
+extern CreateInterfaceFn	Sys_GetFactoryInternal( void );
+
+/**
+*	Gets the factory that checks both the local and game interface lists. - Solokiller
+*/
 extern CreateInterfaceFn	Sys_GetFactoryThis( void );
 
 

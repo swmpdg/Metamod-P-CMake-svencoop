@@ -71,6 +71,11 @@ meta_globals_t *gpMetaGlobals;		// metamod globals
 gamedll_funcs_t *gpGamedllFuncs;	// gameDLL function tables
 mutil_funcs_t *gpMetaUtilFuncs;		// metamod utility functions
 
+/**
+*	Factory functions.
+*/
+MetaFactories_t* g_pFactories = NULL;
+
 // Metamod requesting info about this plugin
 //  ifvers			(given) interface_version metamod is using
 //  pPlugInfo		(requested) struct with info about plugin
@@ -166,4 +171,17 @@ C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
 	}
 	// Done!
 	return(plugin_detach());
+}
+
+C_DLLEXPORT int Meta_Factories( MetaFactories_t* pFactories )
+{
+	g_pFactories = pFactories;
+
+	if( !pFactories )
+	{
+		LOG_ERROR( PLID, "Meta_Factories called with null pFactories" );
+		return( FALSE );
+	}
+
+	return TRUE;
 }

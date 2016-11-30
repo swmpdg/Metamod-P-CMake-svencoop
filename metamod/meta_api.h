@@ -44,6 +44,8 @@
 #include "osdep.h"				// DLLEXPORT, etc
 #include "mutil.h"
 
+#include "interface.h"			// CreateInterfaceFn, etc
+
 // Version consists of "major:minor", two separate integer numbers.
 // Version 1	original
 // Version 2	added plugin_info_t **pinfo
@@ -148,6 +150,82 @@ typedef int (*META_ATTACH_FN) (PLUG_LOADTIME now,
 // Detach the plugin; tell why and when.
 C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
 typedef int (*META_DETACH_FN) (PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+
+/**
+*	Contains pointers to interface factories. - Solokiller
+*	Each plugin gets its own copy of this so they can't screw with the global factory list.
+*/
+struct MetaFactories_t
+{
+	MetaFactories_t()
+	{
+		memset( this, 0, sizeof( *this ) );
+	}
+
+	~MetaFactories_t()
+	{
+		free( Factories );
+	}
+
+	void Init(
+		CreateInterfaceFn pMetamodFactory,
+		CreateInterfaceFn pMetamodOnlyFactory,
+		CreateInterfaceFn pGameFactory,
+		CreateInterfaceFn* pFactories, size_t uiNumFactories )
+	{
+		MetamodFactory		= pMetamodFactory;
+		MetamodOnlyFactory	= pMetamodOnlyFactory;
+		GameFactory			= pGameFactory;
+
+		//If Init gets called multiple times, clean up.
+		if( Factories )
+			free( Factories );
+
+		Factories = ( CreateInterfaceFn* ) malloc( sizeof( CreateInterfaceFn ) * uiNumFactories );
+
+		memcpy( Factories, pFactories, uiNumFactories );
+
+		Factories		= pFactories;
+		NumFactories	= uiNumFactories;
+	}
+
+	/**
+	*	Metamod factory. Handles both Metamod and game interfaces.
+	*/
+	CreateInterfaceFn MetamodFactory;
+
+	/**
+	*	Metamod only factory. Handles only Metamod interfaces, including game interfaces that Metamod overrides.
+	*/
+	CreateInterfaceFn MetamodOnlyFactory;
+
+	/**
+	*	Game factory. Handles only game interfaces. May be null if the game uses an older SDK.
+	*/
+	CreateInterfaceFn GameFactory;
+
+	/**
+	*	List of extra interface factories. Any other libraries that Metamod loads may be found here.
+	*/
+	CreateInterfaceFn* Factories;
+
+	/**
+	*	Number of interface factories in pFactories.
+	*/
+	size_t NumFactories;
+};
+
+extern MetaFactories_t* g_pFactories DLLHIDDEN;
+
+/**
+*	Provide factory functions to the plugin. Called after Meta_Attach.
+*	Optional.
+*/
+C_DLLEXPORT int Meta_Factories( MetaFactories_t* pFfactories );
+
+typedef int( *META_FACTORIES_FN )( MetaFactories_t* pFactories );
+
+#define META_FACTORIES_PROCNAME "Meta_Factories"
 
 // Standard HL SDK interface function prototypes.
 C_DLLEXPORT int GetEntityAPI_Post(DLL_FUNCTIONS *pFunctionTable, 
