@@ -32,14 +32,15 @@ public:
 	/**
 	*	Constructs an auth ID string from a Steam2 ID.
 	*	@param userID User ID.
+	*	@param bIsLan Whether to use the lan auth ID rules.
 	*	@param universe Universe that this ID belongs in.
 	*/
-	CSteam2IDString( const TSteamGlobalUserID& userID, EUniverse universe = k_EUniversePublic );
+	CSteam2IDString( const TSteamGlobalUserID& userID, const bool bIsLan, EUniverse universe = k_EUniversePublic );
 
 	/**
 	*	Constructs an auth ID string from a Steam3 ID.
 	*	@param steamID Steam3 ID.
-	*	@param bIsLan Whether this is server is currently running with sv_lan enabled.
+	*	@param bIsLan Whether to use the lan auth ID rules.
 	*/
 	CSteam2IDString( const CSteamID& steamID, const bool bIsLan );
 
@@ -58,12 +59,12 @@ public:
 	/**
 	*	@return Whether this Steam ID is pending.
 	*/
-	bool IsPending() const { return stricmp( m_szString, STEAM_ID_PENDING ) == 0; }
+	bool IsPending() const { return strcmp( m_szString, STEAM_ID_PENDING ) == 0; }
 
 	/**
 	*	@return Whether this Steam ID is lan.
 	*/
-	bool IsLan() const { return stricmp( m_szString, STEAM_ID_LAN ) == 0; }
+	bool IsLan() const { return strcmp( m_szString, STEAM_ID_LAN ) == 0; }
 
 	/**
 	*	@return The auth ID string.
@@ -77,14 +78,16 @@ public:
 
 	/**
 	*	Sets the auth ID string from a Steam2 ID.
+	*	@param userID User ID.
+	*	@param bIsLan Whether to use the lan auth ID rules.
 	*	@param universe Universe that this auth ID belongs in.
 	*/
-	void Set( const TSteamGlobalUserID& userID, EUniverse universe = k_EUniversePublic );
+	void Set( const TSteamGlobalUserID& userID, const bool bIsLan, EUniverse universe = k_EUniversePublic );
 
 	/**
 	*	Sets the auth ID string from a Steam3 ID.
 	*	@param steamID Steam3 ID.
-	*	@param bIsLan Whether this is server is currently running with sv_lan enabled.
+	*	@param bIsLan Whether to use the lan auth ID rules.
 	*/
 	void Set( const CSteamID& steamID, const bool bIsLan );
 
@@ -113,14 +116,24 @@ public:
 
 	bool operator!=( const CSteam2IDString& other ) const;
 
+	/**
+	*	@return The auth ID representing the pending ID.
+	*/
+	static CSteam2IDString GetPendingID() { return CSteam2IDString( STEAM_ID_PENDING ); }
+
+	/**
+	*	@return The auth ID representing the lan ID.
+	*/
+	static CSteam2IDString GetLanID() { return CSteam2IDString( STEAM_ID_LAN ); }
+
 private:
 	char m_szString[ MAX_SIZE ] = {};
 	EUniverse m_Universe = k_EUniverseInvalid;
 };
 
-inline CSteam2IDString::CSteam2IDString( const TSteamGlobalUserID& userID, EUniverse universe )
+inline CSteam2IDString::CSteam2IDString( const TSteamGlobalUserID& userID, const bool bIsLan, EUniverse universe )
 {
-	Set( userID, universe );
+	Set( userID, bIsLan, universe );
 }
 
 inline CSteam2IDString::CSteam2IDString( const CSteamID& steamID, const bool bIsLan )
@@ -133,8 +146,22 @@ inline CSteam2IDString::CSteam2IDString( const char* const pszAuthID, EUniverse 
 	Set( pszAuthID, universe );
 }
 
-inline void CSteam2IDString::Set( const TSteamGlobalUserID& userID, EUniverse universe )
+inline void CSteam2IDString::Set( const TSteamGlobalUserID& userID, const bool bIsLan, EUniverse universe )
 {
+	if( bIsLan )
+	{
+		strcpy( m_szString, STEAM_ID_LAN );
+		m_Universe = universe;
+		return;
+	}
+
+	if( userID.m_SteamInstanceID == 0 && userID.m_SteamLocalUserID.As64bits == 0ULL )
+	{
+		strcpy( m_szString, STEAM_ID_PENDING );
+		m_Universe = universe;
+		return;
+	}
+
 	const auto result = snprintf( m_szString, sizeof( m_szString ), "STEAM_%u:%u:%u",
 								  userID.m_SteamInstanceID,
 								  userID.m_SteamLocalUserID.Split.High32bits,
@@ -153,34 +180,19 @@ inline void CSteam2IDString::Set( const TSteamGlobalUserID& userID, EUniverse un
 
 inline void CSteam2IDString::Set( const CSteamID& steamID, const bool bIsLan )
 {
-	if( !bIsLan )
-	{
-		if( steamID.ConvertToUint64() )
-		{
-			TSteamGlobalUserID userID;
+	TSteamGlobalUserID userID;
 
-			steamID.ConvertToSteam2( &userID );
+	steamID.ConvertToSteam2( &userID );
 
-			Set( userID, steamID.GetEUniverse() );
-		}
-		else
-		{
-			strcpy( m_szString, STEAM_ID_PENDING );
-			m_Universe = k_EUniversePublic;
-		}
-	}
-	else
-	{
-		strcpy( m_szString, STEAM_ID_LAN );
-		m_Universe = k_EUniversePublic;
-	}
+	//Lan servers and Steam IDs with a 0 value don't have a valid universe set.
+	Set( userID, bIsLan, ( !bIsLan && steamID.ConvertToUint64() ) ? steamID.GetEUniverse() : k_EUniversePublic );
 }
 
 inline void CSteam2IDString::Set( const char* const pszAuthID, EUniverse universe )
 {
 	bool bIsValid = false;
 
-	if( pszAuthID && !*pszAuthID )
+	if( pszAuthID && *pszAuthID )
 	{
 		const auto length = strlen( pszAuthID );
 
@@ -191,7 +203,8 @@ inline void CSteam2IDString::Set( const char* const pszAuthID, EUniverse univers
 
 			CSteamID steamID;
 
-			bIsValid = ConvertToSteam3( steamID ) && steamID.IsValid();
+			//The ID is valid if it's either the pending, lan or a valid Steam ID.
+			bIsValid = ( IsPending() || IsLan() ) ||(  ConvertToSteam3( steamID ) && steamID.IsValid() );
 		}
 	}
 
