@@ -10,29 +10,11 @@ IMetaSteamworks* g_pMetaSteamworks = nullptr;
 
 static CSteamAPIContext g_SteamAPIContext;
 
-CSteamAPIContext* g_pSteamAPIContext = &g_SteamAPIContext;
+static CSteamGameServerAPIContext g_SteamServerAPIContext;
 
-//These API functions are implemented here so the context can use them directly.
-S_API ISteamClient* SteamClient()
-{
-	assert( g_pMetaSteamworks );
+CSteamAPIContext* g_pSteamAPI = &g_SteamAPIContext;
 
-	return g_pMetaSteamworks->GetSteamClient();
-}
-
-S_API HSteamPipe SteamAPI_GetHSteamPipe()
-{
-	assert( g_pMetaSteamworks );
-
-	return g_pMetaSteamworks->GetHSteamPipe();
-}
-
-S_API HSteamUser SteamAPI_GetHSteamUser()
-{
-	assert( g_pMetaSteamworks );
-
-	return g_pMetaSteamworks->GetHSteamUser();
-}
+CSteamGameServerAPIContext* g_pSteamServerAPI = &g_SteamServerAPIContext;
 
 bool Steamworks_InitLibrary()
 {
@@ -43,16 +25,33 @@ bool Steamworks_InitLibrary()
 
 	if( !g_pMetaSteamworks )
 	{
-		LOG_ERROR( PLID, "Steamworks_InitPlugin: Couldn't get interface \"%s\" from Metamod", IMETASTEAMWORKS_NAME );
+		LOG_ERROR( PLID, "Steamworks_InitLibrary: Couldn't get interface \"%s\" from Metamod", IMETASTEAMWORKS_NAME );
 		return false;
 	}
 
-	return g_pSteamAPIContext->Init();
+	return g_pSteamAPI->Init();
+}
+
+bool Steamworks_InitLibraryServerAPI()
+{
+	//This assert will hit if you try to initialize the API before the server is active.
+	assert( g_pSteamClientGameServer );
+
+	if( !g_pSteamServerAPI->Init() )
+	{
+		LOG_ERROR( PLID, "Steamworks_InitLibraryServerAPI: Failed to initialize Server API" );
+		return false;
+	}
+
+	LOG_MESSAGE( PLID, "Steamworks_InitLibraryServerAPI: Server API initialized" );
+
+	return true;
 }
 
 void Steamworks_ShutdownLibrary()
 {
-	g_pSteamAPIContext->Clear();
+	g_pSteamServerAPI->Clear();
+	g_pSteamAPI->Clear();
 
 	g_pMetaSteamworks = nullptr;
 }

@@ -207,6 +207,10 @@ mBOOL DLLINTERNAL os_safe_call(REG_CMD_FN pfn);
 	#ifndef O_BINARY
     		#define O_BINARY 0
 	#endif	
+
+	//Added these - Solokiller
+	#define stricmp strcasecmp
+	#define strnicmp strncasecmp
 #elif defined(_WIN32)
 	#include <io.h>
 	#include <direct.h>
@@ -227,6 +231,9 @@ mBOOL DLLINTERNAL os_safe_call(REG_CMD_FN pfn);
 		#define read		_read
 		#define write		_write
 		#define close		_close
+		//Added these. - Solokiller
+		#define stricmp		_stricmp
+		#define strnicmp	_strnicmp
 	#endif /* GCC or MSVC 8.0+ */
 #endif /* _WIN32 */
 

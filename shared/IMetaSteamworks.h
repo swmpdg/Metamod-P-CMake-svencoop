@@ -2,31 +2,57 @@
 #define IMETASTEAMWORKS_H
 
 #include "interface.h"
+//Include this first so Steam2 support is enabled. - Solokiller
+#include "common/steamcommon.h"
 #include "steam_api.h"
 
+#include <extdll.h>
+#include <meta_api.h>
+
 /**
-*	Provides access to Steamworks APIs to plugins.
-*	Metamod itself can safely call Steamworks API functions directly, plugins cannot because they won't link with the library.
-*	This is to reduce the number of dependencies, and since Metamod is in control of the interfaces we can deal with versioning more easily.
+*	Listener that lets plugins be notified of global Steamworks events.
+*	By default, listeners are removed when a plugin is unloaded or when the server shuts down.
+*	You can manually remove listeners if you want, and you can remove them from inside a callback.
+*/
+class IMetaSteamworksListener : public IBaseInterface
+{
+public:
+
+	/**
+	*	Called when the Steam game server has started up.
+	*	This callback is the first moment that the Steam game server context can be initialized.
+	*/
+	virtual void OnServerStarted() {}
+
+	/**
+	*	Called when the server is shutting down. Equivalent to NEW_DLL_FUNCTIONS::pfnGameShutdown.
+	*	Can be called without OnServerStarted having been called if the server started with no map and then shut down.
+	*	@see IMetaSteamworks::IsServerActive
+	*/
+	virtual void OnServerShutdown() {}
+};
+
+/**
+*	Metamod interface for Steamworks. Plugins link with Steamworks directly, this provides access to Metamod's global Steamworks support.
 */
 class IMetaSteamworks : public IBaseInterface
 {
 public:
 
 	/**
-	*	Gets the Steam client.
+	*	@return Whether the server is active.
 	*/
-	virtual ISteamClient* GetSteamClient() = 0;
+	virtual bool IsServerActive() const = 0;
 
 	/**
-	*	The pipe used to communicate with.
+	*	Add a listener.
 	*/
-	virtual HSteamPipe GetHSteamPipe() = 0;
+	virtual void AddListener( plid_t plid, IMetaSteamworksListener* pListener ) = 0;
 
 	/**
-	*	The user we're running as.
+	*	Remove a listener.
 	*/
-	virtual HSteamUser GetHSteamUser() = 0;
+	virtual void RemoveListener( plid_t plid, IMetaSteamworksListener* pListener ) = 0;
 };
 
 /**

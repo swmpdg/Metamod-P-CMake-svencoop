@@ -44,6 +44,7 @@
 
 #include "sdk_util.h"		// UTIL_LogPrintf, etc
 #include "plugin/SteamworksAPI.h"
+#include "CMetaSteamworksListener.h"
 
 // Must provide at least one of these..
 static META_FUNCTIONS gMetaFunctionTable = {
@@ -79,6 +80,13 @@ mutil_funcs_t *gpMetaUtilFuncs;		// metamod utility functions
 *	Factory functions.
 */
 MetaFactories_t* g_pFactories = NULL;
+
+/*
+*	Replace this with your own listener class or modify it to include your required features.
+*/
+static CMetaSteamworksListener g_MetaSteamworksListener;
+
+IMetaSteamworksListener* g_pMetaSteamworksListener = &g_MetaSteamworksListener;
 
 // Metamod requesting info about this plugin:
 //  ifvers			(given) interface_version metamod is using
@@ -146,6 +154,7 @@ C_DLLEXPORT int Meta_Factories( MetaFactories_t* pFactories )
 	else
 	{
 		LOG_MESSAGE( PLID, "Steamworks interface initialized" );
+		g_pMetaSteamworks->AddListener( PLID, g_pMetaSteamworksListener );
 	}
 
 	return TRUE;

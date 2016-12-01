@@ -45,6 +45,8 @@
 #include "log_meta.h"		// META_ERROR, etc
 #include "api_hook.h"
 
+#include "SteamworksAPI_Meta.h"
+
 
 // Original DLL routines, functions returning "void".
 #define META_DLLAPI_HANDLE_void(FN_TYPE, pfnName, pack_args_type, pfn_args) \
@@ -302,6 +304,10 @@ static int mm_GetHullBounds(int hullnumber, float *mins, float *maxs) {
 	RETURN_API(int);
 }
 static void mm_CreateInstancedBaselines (void) {
+
+	//This is the first server API call that occurs after the Steam game server is initialized that isn't conditional.
+	MetaSteamworks()->OnCreateInstancedBaselines();
+
 	META_DLLAPI_HANDLE_void(FN_CREATEINSTANCEDBASELINES, pfnCreateInstancedBaselines, void, (VOID_ARG));
 	RETURN_API_void();
 }
@@ -327,6 +333,8 @@ static void mm_OnFreeEntPrivateData(edict_t *pEnt) {
 	RETURN_API_void();
 }
 static void mm_GameShutdown(void) {
+	MetaSteamworks()->OnGameShutdown();
+
 	META_NEWAPI_HANDLE_void(FN_GAMESHUTDOWN, pfnGameShutdown, void, (VOID_ARG));
 	RETURN_API_void();
 }

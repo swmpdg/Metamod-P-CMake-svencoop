@@ -340,11 +340,20 @@ elseif( UNIX )
 endif()
 
 set( SHARED_PLUGIN_DEFS
-	STEAM_API_NODLL
 )
 
 #Shared library dependencies.
+#Link with the Steamworks API. For non-Windows targets, prefer the library in the game over the local version.
+if( WIN32 )
+	find_library( STEAM_API_LIB steam_api${CMAKE_IMPORT_LIBRARY_SUFFIX} PATHS ${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/lib/public )
+elseif( APPLE )
+	find_library( STEAM_API_LIB steam_api PATHS ${GAME_BASE_DIRECTORY} ${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/lib/osx32 )
+else()
+	find_library( STEAM_API_LIB steam_api PATHS ${GAME_BASE_DIRECTORY} ${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/lib/linux32 )
+endif()
+
 set( SHARED_LIBRARY_DEPS
+	${STEAM_API_LIB}
 )
 
 if( NOT WIN32 )
