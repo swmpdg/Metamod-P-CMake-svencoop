@@ -32,6 +32,9 @@
 #ifndef COMP_DEP_H
 #define COMP_DEP_H
 
+//For va_copy - Solokiller
+#include <cstdarg>
+
 #define DECLSPEC(kw)
 #if defined (_WIN32) && defined (_MSC_VER)
 	#define ATTRIBUTE(kw) 
@@ -101,5 +104,10 @@
 *	Macro used to define unreferenced function parameters.
 */
 #define UNREFERENCED( x )
+
+/**
+*	ALternative to UNREFERENCED when you need to add documentation for a parameter.
+*/
+#define REFERENCED( x ) ( ( void ) x )
 
 #endif /*COMP_DEP_H*/

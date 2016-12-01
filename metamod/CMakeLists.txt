@@ -160,19 +160,9 @@ target_compile_definitions( ${METAMOD_NAME} PRIVATE
 	${META_PERFMON}
 )
 
-#Link with the Steamworks API. For non-Windows targets, prefer the library in the game over the local version.
-if( WIN32 )
-	find_library( STEAM_API_LIB steam_api${CMAKE_IMPORT_LIBRARY_SUFFIX} PATHS ${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/lib/public )
-elseif( APPLE )
-	find_library( STEAM_API_LIB steam_api PATHS ${GAME_BASE_DIRECTORY} ${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/lib/osx32 )
-else()
-	find_library( STEAM_API_LIB steam_api PATHS ${GAME_BASE_DIRECTORY} ${CMAKE_SOURCE_DIR}/external/SOURCE_SDK/lib/linux32 )
-endif()
-
 #Add library dependencies here.
 target_link_libraries( ${METAMOD_NAME}
 	${SHARED_LIBRARY_DEPS}
-	${STEAM_API_LIB}
 )
 
 #If the user wants automatic deployment to a game directory, set the output directory paths.

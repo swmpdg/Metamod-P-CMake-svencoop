@@ -54,6 +54,7 @@
 #include "mm_pextensions.h"
 #include "engine_t.h"			//Engine.ident
 
+#include "SteamworksAPI_Meta.h"
 
 // Parse a line from plugins.ini into a plugin.
 // meta_errno values:
@@ -1124,6 +1125,8 @@ mBOOL DLLINTERNAL MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL
 	}
 
 	// successful detach, or forced unload
+
+	MetaSteamworks()->OnPluginUnloaded( *this );
 	
 	// clear source_plugin_index for all plugins that this plugin has loaded
 	Plugins->clear_source_plugin_index(index);

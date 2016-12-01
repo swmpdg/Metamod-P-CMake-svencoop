@@ -18,6 +18,8 @@ set( PLUGIN_LINK_FLAGS )
 add_sources(
 	${SHARED_SOURCES}
 	${SHARED_PLUGIN_SOURCES}
+	CMetaSteamworksListener.h
+	CMetaSteamworksListener.cpp
 	dllapi.cpp
 	dummy.h
 	dummy.rc
