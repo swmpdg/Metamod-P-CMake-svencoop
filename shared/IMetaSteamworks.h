@@ -2,6 +2,8 @@
 #define IMETASTEAMWORKS_H
 
 #include "interface.h"
+//Include this first so Steam2 support is enabled. - Solokiller
+#include "common/steamcommon.h"
 #include "steam_api.h"
 
 #include <extdll.h>

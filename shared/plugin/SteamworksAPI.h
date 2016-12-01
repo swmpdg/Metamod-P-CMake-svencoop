@@ -1,8 +1,11 @@
 #ifndef PLUGIN_STEAMWORKSAPI_H
 #define PLUGIN_STEAMWORKSAPI_H
 
+//Include this first so Steam2 support is enabled. - Solokiller
+#include "common/steamcommon.h"
 #include "steam_api.h"
 #include "steam_gameserver.h"
+#include "CSteam2IDString.h"
 
 #include "IMetaSteamworks.h"
 
