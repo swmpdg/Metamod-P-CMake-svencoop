@@ -89,10 +89,39 @@ bool DLLINTERNAL EngineInfo::check_for_engine_module( const char* _pName )
 	// First we see if the string ends in '.so'
 	if ( *pC-- != 'o' || *pC-- != 's' || *pC-- != '.' ) return false;
 
+	//Cache current position. - Solokiller
+	const char* pszChar = pC;
+
 	// Now find the '_' which would be the seperator between 'engine' and
 	// the architecture.
 	while ( *pC != '_' && pC != _pName ) --pC;
-	if ( pC == _pName ) return false;
+
+	if ( pC == _pName )
+	{
+		//It's not a dedicated server library, so check for hw.so (client engine library). - Solokiller
+		pC = pszChar;
+
+		while( *pC != '/' && pC != _pName ) --pC;
+
+		if( pC == _pName )
+			return false;
+
+		//Skip the '/' so we get "hw.so".
+		++pC;
+
+		if( strcmp( pC, "hw.so" ) == 0 )
+		{
+			//This is the Linux listen server library.
+			while( *pC != '.' && size < c_EngineInfo__typeLen - 1 ) {
+				m_type[ size++ ] = *pC++;
+			}
+			m_type[ size ] = '\0';
+
+			return true;
+		}
+
+		return false;
+	}
 
 	// We are at the '_', thus the architecture identifier must start at
 	// the next character.
