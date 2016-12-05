@@ -1,52 +1,37 @@
-#include <string>
-#include <vector>
+#include <assert.h>
+#include <string.h>
 
 #include <extdll.h>
 #include <meta_api.h>
 
 #include "EngineIdent.h"
 
-std::string GetLibraryName( DLHANDLE handle, bool* pSuccess )
+char* GetLibraryName( DLHANDLE handle, char* pszBuffer, const size_t uiSizeInCharacters, bool* pSuccess )
 {
+	assert( pszBuffer );
+	assert( uiSizeInCharacters > 0 );
+
 	if( pSuccess )
 		*pSuccess = false;
 
-	std::vector<char> vecFileName;
-
-	vecFileName.resize( PATH_MAX );
-
 #ifdef WIN32
-	size_t uiCount = 0;
+	const DWORD uiLength = GetModuleFileNameA( handle, pszBuffer, uiSizeInCharacters );
 
-	//Double the buffer size up to 10 times before quitting.
-	do
+	if( uiLength < uiSizeInCharacters )
 	{
-		const DWORD uiLength = GetModuleFileNameA( handle, vecFileName.data(), vecFileName.size() );
+		if( pSuccess )
+			*pSuccess = true;
 
-		//Buffer too small.
-		if( uiLength < vecFileName.size() )
-		{
-			if( pSuccess )
-				*pSuccess = true;
-
-			return std::string( vecFileName.begin(), vecFileName.end() );
-		}
-
-		const auto newSize = vecFileName.size() * 2;
-
-		//Account for overflows.
-		if( newSize < vecFileName.size() )
-			return "";
-
-		vecFileName.resize( newSize );
+		return pszBuffer;
 	}
-	while( uiCount++ < 10 );
+
+	//Buffer too small.
 
 #else
 	//TODO
 #endif
 
-	return "";
+	return nullptr;
 }
 
 bool CEngineIdent::Identify( void* pAddress )
@@ -61,7 +46,8 @@ bool CEngineIdent::Identify( void* pAddress )
 	}
 
 	DLHANDLE handle;
-	std::string szFilename;
+	
+	char szFilename[ PATH_MAX ];
 
 #ifdef WIN32
 	{
@@ -76,7 +62,7 @@ bool CEngineIdent::Identify( void* pAddress )
 
 		bool bSuccess;
 
-		szFilename = GetLibraryName( handle, &bSuccess );
+		GetLibraryName( handle, szFilename, sizeof( szFilename ), &bSuccess );
 
 		if( !bSuccess )
 		{
@@ -106,63 +92,67 @@ bool CEngineIdent::Identify( void* pAddress )
 		//Decrement reference count; engine loaded us.
 		dlclose( handle );
 
-		szFilename = info.dli_fname;
+		const size_t uiLength = strlen( info.dli_fname );
+
+		if( uiLength >= sizeof( szFilename ) )
+		{
+			META_WARNING( "CEngineIdent::Identify: Library filename too large!\n" );
+			return false;
+		}
+
+		strncpy( szFilename, info.dli_fname, sizeof( szFilename ) );
+		szFilename[ sizeof( szFilename ) - 1 ] = '\0';
 	}
 #endif
 
+	const size_t uiLength = strlen( szFilename );
+
 	//Strip the path.
-	auto it = szFilename.rbegin();
-	auto end = szFilename.rend();
-
-	for( ; it != end; ++it )
 	{
-		if( *it == '/' || *it == '\\' )
-			break;
-	}
+		const char* pszIt = szFilename + uiLength - 1;
 
-	szFilename.erase( szFilename.begin(), it.base() );
+		for( ; pszIt != szFilename; --pszIt )
+		{
+			if( *pszIt == '/' || *pszIt == '\\' )
+				break;
+		}
+
+		if( pszIt != szFilename )
+		{
+			//Also copies the null terminator.
+			memmove( szFilename, pszIt + 1, strlen( pszIt + 1 ) + 1 );
+		}
+	}
 
 	//Strip the extension.
-	auto extPos = szFilename.find( '.' );
+	char* pszExtPos = strchr( szFilename, '.' );
 
-	if( extPos != std::string::npos )
-		szFilename.resize( extPos );
+	if( pszExtPos )
+		*pszExtPos = '\0';
 
 	//Strip the arch (Linux).
-	auto archPos = szFilename.rfind( '_' );
+	char* pszArchPos = strrchr( szFilename, '_' );
 
-	std::string szArch;
+	char szArch[ PATH_MAX ] = {};
 
-	if( archPos != std::string::npos )
+	if( pszArchPos )
 	{
-		szArch = szFilename.substr( archPos + 1 );
-		szFilename.resize( archPos );
+		strncpy( szArch, pszArchPos + 1, sizeof( szArch ) );
+		szArch[ sizeof( szArch ) - 1 ] = '\0';
+		*pszArchPos = '\0';
 	}
 
-	if( szFilename.empty() )
+	if( !( *szFilename ) )
 	{
 		META_WARNING( "CEngineIdent::Identify: Couldn't identify the name of the engine library" );
 		return false;
 	}
 
-	//Name too large (should never happen).
-	if( szFilename.size() >= sizeof( m_szName ) )
-	{
-		META_WARNING( "CEngineIdent::Identify: Engine library name is too large" );
-		return false;
-	}
-
-	if( szArch.size() >= sizeof( m_szArch ) )
-	{
-		META_WARNING( "CEngineIdent::Identify: Engine library architecture name is too large" );
-		return false;
-	}
-
 	m_hHandle = handle;
-	strncpy( m_szName, szFilename.c_str(), sizeof( m_szName ) );
+	strncpy( m_szName, szFilename, sizeof( m_szName ) );
 	m_szName[ sizeof( m_szName ) - 1 ] = '\0';
 
-	strncpy( m_szArch, szArch.c_str(), sizeof( m_szArch ) );
+	strncpy( m_szArch, szArch, sizeof( m_szArch ) );
 	m_szArch[ sizeof( m_szArch ) - 1 ] = '\0';
 
 	return true;
