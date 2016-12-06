@@ -25,15 +25,15 @@ matrix:
   include:
     #debug
     - os: linux
-      env: COMPILER=gcc-6 BUILD_RULES="-DOPT:STRING=debug" -DGAME_BASE_DIRECTORY=dummy OPT=debug
+      env: COMPILER=gcc-6 BUILD_RULES="-DOPT:STRING=debug -DGAME_BASE_DIRECTORY=dummy" OPT=debug
 
     #optimized
     - os: linux
-      env: COMPILER=gcc-6 BUILD_RULES="-DOPT:STRING=opt" -DGAME_BASE_DIRECTORY=dummy OPT=opt
+      env: COMPILER=gcc-6 BUILD_RULES="-DOPT:STRING=opt -DGAME_BASE_DIRECTORY=dummy" OPT=opt
   
     #optimized fast
     - os: linux
-      env: COMPILER=gcc-6 BUILD_RULES="-DOPT:STRING=opt-fast" -DGAME_BASE_DIRECTORY=dummy OPT=opt-fast
+      env: COMPILER=gcc-6 BUILD_RULES="-DOPT:STRING=opt-fast -DGAME_BASE_DIRECTORY=dummy" OPT=opt-fast
 
 before_install:
   - |
