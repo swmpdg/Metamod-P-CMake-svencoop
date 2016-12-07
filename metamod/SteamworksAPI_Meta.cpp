@@ -4,6 +4,9 @@
 
 #include <extdll.h>
 
+#undef min
+#undef max
+
 #include "mplugin.h"
 
 #include "SteamworksAPI_Meta.h"
