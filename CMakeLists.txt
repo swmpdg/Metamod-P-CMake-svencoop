@@ -357,11 +357,14 @@ set( SHARED_LIBRARY_DEPS
 )
 
 if( NOT WIN32 )
+	#Link statically with the CRT and STL so it doesn't depend on the user's version.
+	#Note: STL dependency is hopefully temporary until its uses can be removed. - Solokiller
 	set( SHARED_LIBRARY_DEPS
 		${SHARED_LIBRARY_DEPS}
 		dl
 		m
 		-static-libgcc
+		-static-libstdc++
 	)	
 endif()
 
