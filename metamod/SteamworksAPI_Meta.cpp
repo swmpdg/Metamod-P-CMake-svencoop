@@ -13,10 +13,10 @@
 
 bool Steamworks_Init()
 {
-	//SteamAPI_Init is called by the engine, but it seems that calling it again is safe.
-	//Because we use version safe APIs we need InitSafe, which seems to trigger some internal changes.
-	//The engine stills works after this call. - Solokiller
-	return SteamAPI_InitSafe();
+	//Don't call SteamAPI_Init, that's intended for use with Steam client interfaces.
+	//We're a server only mod that will run without an active Steam client so it'll fail to connect if we try.
+	//- Solokiller
+	return true;//SteamAPI_InitSafe();
 }
 
 static CMetaSteamworks g_MetaSteamworks;

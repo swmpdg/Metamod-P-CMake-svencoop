@@ -8,11 +8,7 @@
 
 IMetaSteamworks* g_pMetaSteamworks = nullptr;
 
-static CSteamAPIContext g_SteamAPIContext;
-
 static CSteamGameServerAPIContext g_SteamServerAPIContext;
-
-CSteamAPIContext* g_pSteamAPI = &g_SteamAPIContext;
 
 CSteamGameServerAPIContext* g_pSteamServerAPI = &g_SteamServerAPIContext;
 
@@ -29,7 +25,7 @@ bool Steamworks_InitLibrary()
 		return false;
 	}
 
-	return g_pSteamAPI->Init();
+	return true;
 }
 
 bool Steamworks_InitLibraryServerAPI()
@@ -51,7 +47,6 @@ bool Steamworks_InitLibraryServerAPI()
 void Steamworks_ShutdownLibrary()
 {
 	g_pSteamServerAPI->Clear();
-	g_pSteamAPI->Clear();
 
 	g_pMetaSteamworks = nullptr;
 }
