@@ -15,11 +15,6 @@
 extern IMetaSteamworks* g_pMetaSteamworks;
 
 /**
-*	Steamworks API interface.
-*/
-extern CSteamAPIContext* g_pSteamAPI;
-
-/**
 *	Steamworks game server API interface.
 *	Note: game server pointers are null until the server has started. This doesn't happen until a map has loaded.
 *	Attempting to call any methods before that time will crash the game.
