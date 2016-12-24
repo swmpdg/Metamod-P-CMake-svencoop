@@ -43,7 +43,7 @@
 #endif /* not OPT_TYPE */
 
 
-#define VDATE 			"2016/11/20"
+#define VDATE 			"2016/12/24"
 #define VPATCH_COPYRIGHT_YEAR   "2016"
 #define VMETA_VERSION		"1.21"
 
@@ -54,8 +54,8 @@
 #define VPATCH_P_WEBSITE	"http://metamod-p.sourceforge.net/"
 
 #define VPATCH_NAME		"Metamod-P (mm-p) CMake"
-#define VPATCH_IVERSION		38
-#define VPATCH_VERSION		"38"
+#define VPATCH_IVERSION		39
+#define VPATCH_VERSION		"39"
 #define VPATCH_AUTHOR		"Sam Vanheer"
 #define VPATCH_WEBSITE		"https://github.com/SamVanheer/Metamod-P-CMake"
 
