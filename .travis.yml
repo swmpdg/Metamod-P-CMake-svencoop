@@ -92,4 +92,4 @@ deploy:
     - "Plugins-${OPT}-Linux.zip"
   skip_cleanup: true
   on:
-    tags: true
+    branch: master
