@@ -63,7 +63,7 @@
     deploy:
           - provider: GitHub
             auth_token:
-                secure: vfOUjvsA7vbrYfFOrZh4eAckZ1TZu8izQPbXY8ppDE+sKgvKG5KICFGJkcMvYhxl #Encrypted
+                secure: 36aytcuDEm4dAb4EqppOYXr/Q1gigplUAuOSOPrGEJoJmOy8P30jYVobSxlkeDow #Encrypted
             draft: false
             prerelease: false
             on:
