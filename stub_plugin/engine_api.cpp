@@ -248,6 +248,8 @@ enginefuncs_t meta_engfuncs =
 	NULL,						// pfnEngCheckParm()
 	//Sven Co-op specific - Solokiller
 	NULL,						//pfnNumberOfPrecachedModels()
+	NULL,						//pfnAddPositionToFatPVS()
+	NULL,						//pfnAddPositionToFatPAS()
 };
 
 C_DLLEXPORT int GetEngineFunctions(enginefuncs_t *pengfuncsFromEngine, 

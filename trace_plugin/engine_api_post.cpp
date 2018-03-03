@@ -898,6 +898,16 @@ int NumberOfPrecachedModels_Post()
 	RETURN_META_VALUE( MRES_IGNORED, 0 );
 }
 
+unsigned char *AddPositionToFatPVS_Post( float *UNREFERENCED( org ) ) {
+	ENGINE_TRACE( pfnAddPositionToFatPVS, P_POST, ( "" ) );
+	RETURN_META_VALUE( MRES_IGNORED, NULL );
+}
+
+unsigned char *AddPositionToFatPAS_Post( float *UNREFERENCED( org ) ) {
+	ENGINE_TRACE( pfnAddPositionToFatPAS, P_POST, ( "" ) );
+	RETURN_META_VALUE( MRES_IGNORED, NULL );
+}
+
 enginefuncs_t meta_engfuncs_post = {
 	PrecacheModel_Post,			// pfnPrecacheModel()
 	PrecacheSound_Post,			// pfnPrecacheSound()
@@ -1109,6 +1119,8 @@ enginefuncs_t meta_engfuncs_post = {
 	EngCheckParm_Post,					// pfnEngCheckParm()
 	//Sven Co-op specific - Solokiller
 	NumberOfPrecachedModels_Post,		// pfnNumberOfPrecachedModels()
+	AddPositionToFatPVS_Post,				// pfnAddPositionToFatPVS()
+	AddPositionToFatPAS_Post,				// pfnAddPositionToFatPAS()
 };
 
 C_DLLEXPORT int GetEngineFunctions_Post(enginefuncs_t *pengfuncsFromEngine, int *interfaceVersion ) 

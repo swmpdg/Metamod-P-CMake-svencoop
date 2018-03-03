@@ -345,7 +345,9 @@ meta_enginefuncs_t::meta_enginefuncs_t(
 	void             (*_pfnQueryClientCvarValue2)           (const edict_t*, const char*, int),
 	int             (*_pfnEngCheckParm)           		(const char*, char**),
 	//Sven Co-op specific - Solokiller
-	int				( *_pfnNumberOfPrecachedModels )		( void )
+	int				( *_pfnNumberOfPrecachedModels )		( void ),
+	unsigned char*   ( *_pfnAddPositionToFatPVS )                       ( float* ),
+	unsigned char*   ( *_pfnAddPositionToFatPAS )                       ( float* )
     )
 {
 	pfnPrecacheModel = _pfnPrecacheModel;
@@ -507,6 +509,8 @@ meta_enginefuncs_t::meta_enginefuncs_t(
 	pfnQueryClientCvarValue2 = _pfnQueryClientCvarValue2;
 	pfnEngCheckParm = _pfnEngCheckParm;
 	pfnNumberOfPrecachedModels = _pfnNumberOfPrecachedModels;
+	pfnAddPositionToFatPVS = _pfnAddPositionToFatPVS;
+	pfnAddPositionToFatPAS = _pfnAddPositionToFatPAS;
 
 	memset( extra_functions, 0, sizeof(extra_functions));
 

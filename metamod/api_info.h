@@ -304,6 +304,8 @@ typedef struct engine_info_s {
 	api_info_t pfnEngCheckParm;
 	//Sven Co-op specific - Solokiller
 	api_info_t pfnNumberOfPrecachedModels;
+	api_info_t pfnAddPositionToFatPVS;
+	api_info_t pfnAddPositionToFatPAS;
 	// end
 	api_info_t END;
 } engine_info_t;
