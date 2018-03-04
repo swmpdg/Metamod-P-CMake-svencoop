@@ -317,6 +317,10 @@ typedef struct enginefuncs_s
 	// AdamR: New functions to get the number of models precached (18/Feb/2015)
 	int	( *pfnNumberOfPrecachedModels )	( void );
 
+	// Sven Co-op specific: PAS/PVS functions
+	unsigned char *(*pfnAddPositionToFatPVS)			( float *org );
+	unsigned char *(*pfnAddPositionToFatPAS)			( float *org );
+
 #ifdef __METAMOD_BUILD__
 	//extra (future updates)
 	void * extra_functions[16];

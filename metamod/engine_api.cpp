@@ -922,6 +922,16 @@ static int mm_NumberOfPrecachedModels()
 	RETURN_API( int )
 }
 
+static unsigned char *mm_AddPositionToFatPVS( float *org ) {
+	META_ENGINE_HANDLE( unsigned char *, 0, FN_ADDPOSITIONTOFATPVS, pfnAddPositionToFatPVS, p, ( org ) );
+	RETURN_API( unsigned char * )
+}
+
+static unsigned char *mm_AddPositionToFatPAS( float *org ) {
+	META_ENGINE_HANDLE( unsigned char *, 0, FN_ADDPOSITIONTOFATPAS, pfnAddPositionToFatPAS, p, ( org ) );
+	RETURN_API( unsigned char * )
+}
+
 meta_enginefuncs_t meta_engfuncs (
 	&mm_PrecacheModel,			// pfnPrecacheModel()
 	&mm_PrecacheSound,			// pfnPrecacheSound()
@@ -1136,5 +1146,7 @@ meta_enginefuncs_t meta_engfuncs (
 	&mm_EngCheckParm,			// pfnEngCheckParm()
 
 	//Sven Co-op specific - Solokiller
-	&mm_NumberOfPrecachedModels // pfnNumberofPrecachedModels()
+	&mm_NumberOfPrecachedModels, // pfnNumberofPrecachedModels()
+	&mm_AddPositionToFatPVS, // pfnAddPositionToFatPVS()
+	&mm_AddPositionToFatPAS // pfnAddPositionToFatPAS()
 );

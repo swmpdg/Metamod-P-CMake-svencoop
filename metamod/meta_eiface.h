@@ -362,7 +362,9 @@ struct meta_enginefuncs_t : public enginefuncs_t {
 		void             (*_pfnQueryClientCvarValue2)           (const edict_t*, const char*, int),
 		int              (*_pfnEngCheckParm)                    (const char *, char**),
 		//Sven Co-op specific - Solokiller
-		int				( *_pfnNumberOfPrecachedModels )		( void )
+		int				( *_pfnNumberOfPrecachedModels )		( void ),
+		unsigned char*   ( *_pfnAddPositionToFatPVS )                       ( float* ),
+		unsigned char*   ( *_pfnAddPositionToFatPAS )                       ( float* )
         ) DLLINTERNAL;
 
         meta_enginefuncs_t( const meta_enginefuncs_t& ) DLLINTERNAL;

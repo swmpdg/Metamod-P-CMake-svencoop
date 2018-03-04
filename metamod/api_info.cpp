@@ -273,6 +273,8 @@ const engine_info_t engine_info = {
 	{ mFALSE,  8,	api_caller_int_args_2p,		"EngCheckParm" },		// pfnEngCheckParm
 	//Sven Co-op specific - Solokiller
 	{ mFALSE,  9,	api_caller_void_args_void,	"NumberOfPrecachedModels" },	// pfnNumberOfPrecachedModels
+	{ mFALSE,  31,	api_caller_ptr_args_p,		"AddPositionToFatPVS" },	// pfnAddPositionToFatPVS
+	{ mFALSE,  31,	api_caller_ptr_args_p,		"AddPositionToFatPAS" },	// pfnAddPositionToFatPAS
 	// end
 	{ mFALSE,  0,   NULL,	NULL },
 };
